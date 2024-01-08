@@ -1,26 +1,21 @@
+// TC : O(n*logn)
 class Solution {
+    
     // Longest Increasing Subsequence
     public int lengthOfLIS(int[] nums) {
-        int len = nums.length;
+        TreeSet<Integer> bst = new TreeSet<>();
         
-        int[] dp = new int[len];
-        Arrays.fill(dp, 1);
-        
-        for(int i=1; i<len; i++) {
-            for(int j=0; j<i; j++) {
-                if(nums[i] > nums[j]) {
-                    dp[i] = Math.max(dp[i], dp[j]+1);
-                }
+        for(int num : nums) {
+            Integer higherOrEqual = bst.ceiling(num);
+            if(higherOrEqual == null) {
+                bst.add(num);
+            } else {
+                bst.remove(higherOrEqual);
+                bst.add(num);
             }
         }
         
-        int longest = 0;
-        
-        for(int num : dp) {
-            longest = Math.max(longest, num);
-        }
-        
-        return longest;
+        return bst.size();
     }
     
 }
