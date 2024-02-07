@@ -1,67 +1,44 @@
 // Solution using Bucket sort
 class Solution {
     
-    // helper function -> function to return bucket array
-    private List<Character>[] buildBucketArray(Map<Character, Integer> map, int maxCount) {
-        List<Character>[] array = new List[maxCount+1];
-        
-        for(Character ch : map.keySet()) {
-            int count = map.get(ch);
-            if(array[count] == null) {
-                array[count] = new ArrayList<>();
-            }
-            array[count].add(ch);
+    // Main algorithm code
+    public String frequencySort(String s) {
+        if(s == null || s.length() == 0) {
+            return s;
         }
         
-        return array;
-    }
-    
-    
-    // helper function -> function to build output string from bucket array
-    private String buildOutputString(List<Character>[] array) {
+        Map<Character, Integer> map = new HashMap<>();
+        int maxFreq = Integer.MIN_VALUE;
+        
+        for(char ch : s.toCharArray()) {
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+            maxFreq = Math.max(maxFreq, map.get(ch));
+        }
+        
+        List<List<Character>> buckets = new ArrayList<>();
+        
+        for(int i=0; i <= maxFreq; i++) {
+            buckets.add(new ArrayList<Character>());
+        }
+        
+        for(Character key : map.keySet()) {
+            int freq = map.get(key);
+            buckets.get(freq).add(key);
+        }
+        
         StringBuilder sb = new StringBuilder();
         
-        for(int i=array.length-1; i>0; i--) {
-            List<Character> list = array[i];
-            
-            if(list != null) {
-                
-                for(Character ch : list) {
-                    for(int j=0; j<i; j++) {
-                        sb.append(ch);
-                    }
+        for(int bucketVal = buckets.size() - 1; bucketVal >= 1; bucketVal--) {
+            for(Character ch : buckets.get(bucketVal)) {
+                for(int i=0; i < bucketVal; i++) {
+                    sb.append(ch);
                 }
-                
             }
         }
         
         return sb.toString();
     }
     
-    
-    // Main algorithm code
-    public String frequencySort(String s) {
-        // Corner case
-        if(s == null) {
-            return null;
-        }
-        
-        Map<Character, Integer> map = new HashMap<>();
-        
-        char[] charArray = s.toCharArray();
-        int max = 0;
-        
-        for(Character ch : charArray) {
-            map.put(ch, map.getOrDefault(ch, 0) + 1);
-            max = Math.max(max, map.get(ch));
-        }
-        
-        
-        List<Character>[] array = buildBucketArray(map, max);
-        
-        
-        return buildOutputString(array);
-    }
-    
 }
+
 
