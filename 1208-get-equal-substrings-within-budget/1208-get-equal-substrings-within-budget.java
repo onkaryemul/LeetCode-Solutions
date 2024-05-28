@@ -1,26 +1,28 @@
 class Solution {
     
+    //T.C : O(2*n) ~ O(n)
+    //S.C : O(1)
+    
     public int equalSubstring(String s, String t, int maxCost) {
-        int n = s.length();
+        int n = s.length(); // t.length()
         
-        int ans = -1;
-        int window = 0;
-        int left = 0;
+        int maxLen = 0;
+        int currCost = 0;
         
+        int i=0, j=0;
         
-        for(int right=0; right<n; right++) {
-            window +=  Math.abs(s.charAt(right) - t.charAt(right));
+        for(j=0; j < n; j++) {
+            currCost += Math.abs(s.charAt(j) - t.charAt(j)); // increasing the window size using j
             
-            if(window > maxCost) {
-                window -= Math.abs(s.charAt(left) - t.charAt(left));
-                left++;
+            while(currCost > maxCost) {
+                currCost -= Math.abs(s.charAt(i) - t.charAt(i)); // shrinking the window size using i
+                i++;
             }
             
-            ans = Math.max(ans, right - left + 1);
+            maxLen = Math.max(maxLen, j-i+1);
         }
         
-        
-        return ans;
+        return maxLen;
     }
     
 }
