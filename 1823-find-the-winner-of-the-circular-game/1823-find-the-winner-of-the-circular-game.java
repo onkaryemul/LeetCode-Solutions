@@ -1,21 +1,26 @@
-// TC : O(n)
-// SC : O(n)
 class Solution {
     
-    // recursive function
-    private int solve(int n, int k) {
-        // Base case
-        if(n==1) {
-            return 0;
+    // TC : O(n)
+    // SC : O(n)
+    
+    // Queue-based approach
+    public int findTheWinner(int n, int k) {
+        Queue<Integer> queue = new LinkedList<>();
+        
+        for(int i=1; i <= n; i++) {
+            queue.offer(i);
         }
         
-        return (solve(n-1, k) + k) % n;
-    }
-    
-    // Main algorithm code
-    public int findTheWinner(int n, int k) {
-        int ans = solve(n, k) + 1;
-        return ans;
+        while(queue.size() != 1) {
+            for(int i=1; i <= k-1; i++) {
+                queue.offer(queue.poll());
+            }
+            // kth element
+            queue.poll();
+        }
+        
+        return queue.poll();
     }
     
 }
+
