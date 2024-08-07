@@ -1,51 +1,53 @@
 class Solution {
     
-    // TC : O(n)
-    // SC : O(n)
-    
-    private final String[] belowTen = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"};
-    
-    private final String[] belowTwenty = {"Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
-    
-    private final String[] belowHundred = {"", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+    // TC : O(log10 (num)) --> no. of digits
+    // SC : O(log10 (num)) --> recursive stack space (no. of digits)
     
     
+    private static final String[] belowTen = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"};
+    
+    private static final String[] belowTwenty = {"Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+    
+    private static final String[] belowHundred = {"", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+    
+    
+    // Using Recursion
     public String numberToWords(int num) {
-        // Edge case
+        // Edge case / Corner case
         if(num == 0) {
             return "Zero";
         }
         
-        return helper(num);
+        return solve(num);
     }
+     
     
-    
-    private String helper(int num) {
-        StringBuilder result = new StringBuilder();
-        
+    private String solve(int num) {
         if(num < 10) {
-            result.append(belowTen[num]);
+            return belowTen[num];
         }
-        else if (num < 20) {
-            result.append(belowTwenty[num-10]);
+        
+        if(num < 20) {
+            return belowTwenty[num-10];
         }
-        else if (num < 100) {
-            result.append(belowHundred[num/10]).append(" ").append(helper(num%10));
+        
+        if(num < 100) { // 89 = "Eighty Nine"
+            return belowHundred[num/10] + ((num%10 != 0) ? " " + belowTen[num%10] : ""); 
         }
-        else if (num < 1000) {
-            result.append(helper(num/100)).append(" Hundred ").append(helper(num%100));
+        
+        if(num < 1000) { // 879 
+            return solve(num/100) + " Hundred" + ((num%100 != 0) ? " " + solve(num%100) : "");
         }
-        else if (num < 1000000) { 
-            result.append(helper(num/1000)).append(" Thousand ").append(helper(num%1000));
+        
+        if(num < 1000000) {
+            return solve(num/1000) + " Thousand" + ((num%1000 != 0) ? " " + solve(num%1000) : "");
         }
-        else if (num < 1000000000) {
-            result.append(helper(num/1000000)).append(" Million ").append(helper(num%1000000));
+        
+        if(num < 1000000000) {
+            return solve(num/1000000) + " Million" + ((num%1000000 != 0) ? " " + solve(num%1000000) : "");
         }
-        else {
-            result.append(helper(num/1000000000)).append(" Billion ").append(helper(num%1000000000));
-        }
-         
-        return result.toString().trim();
+        
+        return solve(num/1000000000) + " Billion" + ((num%1000000000 != 0) ? " " + solve(num%1000000000) : "");
     }
     
 }
