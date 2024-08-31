@@ -1,69 +1,59 @@
-class Tuple {
-    double prob;
-    int node;
-    
-    public Tuple(double prob, int node) {
-        this.prob = prob;
-        this.node = node;
-    }
-    
-    public static class TupleComparator implements Comparator<Tuple> {
-        @Override
-        public int compare(Tuple t1, Tuple t2) {
-            return Double.compare(t2.prob, t1.prob);
-        }
-    }
-}
-
-
 class Solution {
     
-    // TC : O(E + V*logE)
+    // Using Dijkstra's Algorithm
+    
+    // TC : O(V + E*logV)
     // SC : O(V + E)
     
-    // Using the concept of "Dijkstra's algorithm"
-    public double maxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node) {
-        PriorityQueue<Tuple> heap = new PriorityQueue<>(new Tuple.TupleComparator());
+    public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
+        // Build the graph
+        Map<Integer, List<Pair<Integer, Double>>> graph = new HashMap<>();
         
-        boolean[] visited = new boolean[n];
-        Arrays.fill(visited, false);
-        
-        Map<Integer, List<Tuple>> graph = new HashMap<>();
         for(int i=0; i < edges.length; i++) {
-            int[] edge = edges[i];
+            int u = edges[i][0];
+            int v = edges[i][1];
             
-            int x = edge[0];
-            int y = edge[1];
+            double pathProb = succProb[i];
             
-            graph.computeIfAbsent(x, k -> new ArrayList<>()).add(new Tuple(succProb[i], y));
-            graph.computeIfAbsent(y, k -> new ArrayList<>()).add(new Tuple(succProb[i], x));
+            graph.computeIfAbsent(u, k -> new ArrayList<>()).add(new Pair<>(v, pathProb));
+            graph.computeIfAbsent(v, k -> new ArrayList<>()).add(new Pair<>(u, pathProb));
         }
         
-        heap.add(new Tuple(1, start_node));
+        // Array to store the maximum probability to reach each node
+        double[] maxProb = new double[n];
+        maxProb[start] = 1d; 
         
-        while(!heap.isEmpty()) {
-            Tuple curr = heap.poll();
+        // Max-heap priority queue to explore the highest probability first
+        PriorityQueue<Pair<Double, Integer>> pq = new PriorityQueue<>((a, b) -> - Double.compare(a.getKey(), b.getKey()));
+        
+        pq.add(new Pair<>(1.0, start));
+        
+        
+        while(!pq.isEmpty()) {
+            Pair<Double, Integer> curr = pq.poll();
+            double currProb = curr.getKey();
+            int currNode = curr.getValue();
             
-            if(curr.node == end_node) {
-                return curr.prob;
+            // If the current node is the end node, then return the probability
+            if(currNode == end) {
+                return currProb;
             }
             
-            if(visited[curr.node]) {
-                continue;
-            }
-            
-            visited[curr.node] = true;
-            
-            if(graph.containsKey(curr.node)) {
-                for(Tuple child : graph.get(curr.node)) {
-                    if(!visited[child.node]) {
-                        heap.add(new Tuple(curr.prob * child.prob, child.node));
-                    }
+            // Explore the neighbors
+            for(Pair<Integer, Double> nbr : graph.getOrDefault(currNode, new ArrayList<>())) {
+                int nbrNode = nbr.getKey();
+                double pathProb = nbr.getValue();
+                
+                // Update the probability if a higher one is found
+                if(currProb * pathProb > maxProb[nbrNode]) {
+                    maxProb[nbrNode] = currProb * pathProb;
+                    pq.add(new Pair<>(maxProb[nbrNode], nbrNode));
                 }
             }
         }
-    
-        return 0;
+        
+        // If the end node is not reachable, then return 0
+        return 0d;
     }
     
 }
