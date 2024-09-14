@@ -1,7 +1,13 @@
 class Solution {
     
-    // TC : O(n)
+    // TC : O(n), single-pass solution
     // SC : O(1)
+    
+    // Simple Observation of AND property
+    
+    // Maximum Bitwise AND --> maximum value in the given array, since Bitwise AND of two numbers is always <= two numbers
+    // ie. to find the longest length of the subarray with maximum value
+     
     public int longestSubarray(int[] nums) {
         int mxm = 0;
         
